@@ -13,18 +13,15 @@ from dxlclient.client_config import DxlClientConfig
 from dxlclient.callbacks import EventCallback
 from common import *
 
-dropped_v4 = []
-dropped_v6 = []
-
-white_v4 = []
-white_v6 = []
+v4iplist = []
+v6iplist = []
 
 def dropIPv4(ip4):
   try:
     v = IP(ip4).version()
   except:
     return
-  if ip4 not in dropped_v4 and v == 4:
+  if ip4 not in v4iplist and v == 4:
     try:
       chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), "INPUT")
       rule = iptc.Rule()
@@ -32,7 +29,7 @@ def dropIPv4(ip4):
       rule.src = ip4
       rule.target = iptc.Target(rule, "DROP")
       chain.insert_rule(rule)
-      dropped_v4.append(ip4)
+      v4iplist.append(ip4)
     except Exception as e:
       print("OpenDXL.dropIPv4.Exception(%s): %s" % (ip4, str(e)))
 
@@ -41,7 +38,7 @@ def dropIPv6(ip6):
     v = IP(ip6).version()
   except:
     return
-  if ip6 not in dropped_v6 and v == 6:
+  if ip6 not in v6iplist and v == 6:
     try:
       chain = iptc.Chain(iptc.Table6(iptc.Table6.FILTER), "INPUT")
       rule = iptc.Rule6()
@@ -49,7 +46,7 @@ def dropIPv6(ip6):
       rule.src = ip6
       rule.target = iptc.Target(rule, "DROP")
       chain.insert_rule(rule)
-      dropped_v6.append(ip6)
+      v6iplist.append(ip6)
     except Exception as e:
       print("OpenDXL.dropIPv6.Exception(%s): %s" % (ip6, str(e)))
 
